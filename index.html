@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars Universe Database</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&family=Electrolize&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --star-wars-yellow: #feda4a;
+            --star-wars-blue: #4bd5ee;
+            --star-wars-red: #ff3333;
+            --dark-bg: #000;
+            --light-text: #fff;
+            --dark-text: #000;
+        }
+        
+        body {
+            font-family: 'Electrolize', Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(33, 150, 243, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(244, 67, 54, 0.1) 0%, transparent 20%),
+                url('https://static.vecteezy.com/system/resources/previews/002/037/924/original/abstract-black-background-with-dynamic-light-pattern-free-vector.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--star-wars-yellow), transparent);
+        }
+        
+        h1 {
+            font-family: 'Pathway Gothic One', sans-serif;
+            color: var(--star-wars-yellow);
+            font-size: 2rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(254, 218, 74, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        h2 {
+            font-family: 'Pathway Gothic One', sans-serif;
+            color: var(--star-wars-blue);
+            font-size: 1.3rem;
+            margin: 0 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .display-area {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--star-wars-blue);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .button-tray {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--star-wars-yellow);
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .button-category {
+            margin-bottom: 10px;
+        }
+        
+        .button-category h3 {
+            color: var(--star-wars-yellow);
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+        
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        button {
+            background-color: rgba(254, 218, 74, 0.9);
+            color: var(--dark-text);
+            border: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-family: 'Electrolize', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            flex: 1 0 auto;
+            min-width: 100px;
+            max-width: 200px;
+        }
+        
+        button:hover {
+            background-color: var(--light-text);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover::after {
+            left: 100%;
+        }
+        
+        .character-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .character-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--star-wars-blue);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .character-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 2px solid var(--star-wars-yellow);
+        }
+        
+        .character-name {
+            font-family: 'Pathway Gothic One', sans-serif;
+            color: var(--star-wars-yellow);
+            font-size: 1.5rem;
+            margin: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .info-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: var(--star-wars-blue);
+            min-width: 100px;
+        }
+        
+        .info-value {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 15px;
+            color: var(--star-wars-yellow);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(254, 218, 74, 0.3);
+        }
+        
+        .search-container {
+            margin: 12px 0;
+            text-align: center;
+        }
+        
+        #search {
+            padding: 8px 12px;
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid var(--star-wars-yellow);
+            border-radius: 30px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--light-text);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        #search:focus {
+            border-color: var(--star-wars-blue);
+            box-shadow: 0 0 15px rgba(75, 213, 238, 0.5);
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(254, 218, 74, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(254, 218, 74, 0.8), 0 0 30px rgba(254, 218, 74, 0.6);
+            }
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .display-area {
+                padding: 10px;
+                min-height: 200px;
+            }
+            
+            .character-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .character-image {
+                width: 100px;
+                height: 100px;
+                align-self: center;
+            }
+            
+            .character-name {
+                font-size: 1.3rem;
+                text-align: center;
+                width: 100%;
+            }
+            
+            button {
+                padding: 6px 8px;
+                font-size: 11px;
+                min-width: 80px;
+            }
+            
+            .button-row {
+                gap: 5px;
+                justify-content: center;
+            }
+            
+            .info-label, .info-value {
+                min-width: 100%;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+        
+        /* Small mobile devices */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            button {
+                min-width: 70px;
+                font-size: 10px;
+                padding: 5px;
+            }
+            
+            .character-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Star Wars Universe</h1>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search characters or planets...">
+        </div>
+        
+        <div class="display-area" id="display-area">
+            <div class="character-info">
+                <div class="character-header">
+                    <img src="https://static.wikia.nocookie.net/starwars/images/d/d9/Luke-rotjpromo.jpg" alt="Luke Skywalker" class="character-image">
+                    <h2 class="character-name">Luke Skywalker</h2>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Description:</span>
+                    <span class="info-value">A legendary Jedi Master who was instrumental in the defeat of the Galactic Empire.</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Born:</span>
+                    <span class="info-value">19 BBY</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Homeworld:</span>
+                    <span class="info-value">Tatooine</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Species:</span>
+                    <span class="info-value">Human</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Affiliation:</span>
+                    <span class="info-value">Jedi Order, Rebel Alliance, New Republic</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-tray">
+            <div class="button-category">
+                <h3>Main Characters</h3>
+                <div class="button-row">
+                    <button data-character="luke">Luke</button>
+                    <button data-character="leia">Leia</button>
+                    <button data-character="han">Han</button>
+                    <button data-character="vader">Vader</button>
+                    <button data-character="yoda">Yoda</button>
+                </div>
+            </div>
+            
+            <div class="button-category">
+                <h3>Other Characters</h3>
+                <div class="button-row">
+                    <button data-character="anakin">Anakin</button>
+                    <button data-character="boba">Boba Fett</button>
+                    <button data-character="c3po">C-3PO</button>
+                    <button data-character="chewbacca">Chewie</button>
+                </div>
+                <div class="button-row">
+                    <button data-character="palpatine">Palpatine</button>
+                    <button data-character="finn">Finn</button>
+                    <button data-character="kylo">Kylo</button>
+                    <button data-character="mace">Mace</button>
+                </div>
+                <div class="button-row">
+                    <button data-character="obiwan">Obi-Wan</button>
+                    <button data-character="padme">Padmé</button>
+                    <button data-character="rey">Rey</button>
+                    <button data-character="r2d2">R2-D2</button>
+                </div>
+            </div>
+            
+            <div class="button-category">
+                <h3>Planets</h3>
+                <div class="button-row">
+                    <button data-planet="coruscant">Coruscant</button>
+                    <button data-planet="dagobah">Dagobah</button>
+                    <button data-planet="endor">Endor</button>
+                    <button data-planet="hoth">Hoth</button>
+                </div>
+                <div class="button-row">
+                    <button data-planet="tatooine">Tatooine</button>
+                    <button data-planet="naboo">Naboo</button>
+                    <button data-planet="kashyyyk">Kashyyyk</button>
+                    <button data-planet="mustafar">Mustafar</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>May the Force be with you</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Character data
+        const characters = {
+            anakin: {
+                name: "Anakin Skywalker",
+                image: "https://static.wikia.nocookie.net/starwars/images/6/6f/Anakin_Skywalker_RotS.png",
+                description: "A Force-sensitive human male who was a Jedi Knight of the Galactic Republic and the prophesied Chosen One of the Jedi Order.",
+                birthYear: "41.9 BBY",
+                homeworld: "Tatooine",
+                species: "Human",
+                affiliation: ["Jedi Order", "Galactic Republic", "Sith"]
+            },
+            boba: {
+                name: "Boba Fett",
+                image: "https://static.wikia.nocookie.net/starwars/images/7/79/Boba_Fett_HS_Fathead.png",
+                description: "A legendary bounty hunter and the clone of Jango Fett, created to be his son.",
+                birthYear: "32 BBY",
+                homeworld: "Kamino",
+                species: "Human (clone)",
+                affiliation: ["Bounty Hunters' Guild", "Galactic Empire"]
+            },
+            c3po: {
+                name: "C-3PO",
+                image: "https://static.wikia.nocookie.net/starwars/images/3/3f/C-3PO_TLJ_Card_Trader_Award_Card.png",
+                description: "A protocol droid designed to interact with organics, programmed primarily for etiquette and protocol.",
+                creationYear: "32 BBY",
+                homeworld: "Tatooine",
+                species: "Droid",
+                affiliation: ["Rebel Alliance", "Resistance"]
+            },
+            chewbacca: {
+                name: "Chewbacca",
+                image: "https://static.wikia.nocookie.net/starwars/images/4/48/Chewbacca_TLJ.png",
+                description: "A Wookiee warrior, smuggler, and resistance fighter who fought in the Clone Wars, the Galactic Civil War, and the conflict between the First Order and the Resistance.",
+                birthYear: "200 BBY",
+                homeworld: "Kashyyyk",
+                species: "Wookiee",
+                affiliation: ["Galactic Republic", "Rebel Alliance", "Resistance"]
+            },
+            vader: {
+                name: "Darth Vader",
+                image: "https://static.wikia.nocookie.net/starwars/images/e/eb/Darth_Vader.jpg",
+                description: "A Sith Lord and galactic ruler who served as Supreme Commander of the Imperial Fleet during the reign of the Galactic Empire.",
+                birthYear: "41.9 BBY",
+                homeworld: "Tatooine",
+                species: "Human",
+                affiliation: ["Sith", "Galactic Empire"]
+            },
+            palpatine: {
+                name: "Emperor Palpatine",
+                image: "https://static.wikia.nocookie.net/starwars/images/d/d8/Emperor_Sidious.png",
+                description: "A Dark Lord of the Sith and Emperor of the Galactic Empire, who ruled the galaxy from the fall of the Galactic Republic to the Battle of Endor.",
+                birthYear: "84 BBY",
+                homeworld: "Naboo",
+                species: "Human",
+                affiliation: ["Sith", "Galactic Empire"]
+            },
+            finn: {
+                name: "Finn",
+                image: "https://static.wikia.nocookie.net/starwars/images/a/af/Finn_TLJ_Collector%27s_Edition.png",
+                description: "A human male stormtrooper who served the First Order until his desertion and subsequent defection to the Resistance during the escape from the Supremacy.",
+                birthYear: "11 ABY",
+                homeworld: "Unknown",
+                species: "Human",
+                affiliation: ["First Order", "Resistance"]
+            },
+            han: {
+                name: "Han Solo",
+                image: "https://static.wikia.nocookie.net/starwars/images/e/e2/HanSolo.jpg",
+                description: "A human male smuggler who became a leader in the Alliance to Restore the Republic and an instrumental figure in the defeat of the Galactic Empire during the Galactic Civil War.",
+                birthYear: "29 BBY",
+                homeworld: "Corellia",
+                species: "Human",
+                affiliation: ["Rebel Alliance", "Resistance"]
+            },
+            kylo: {
+                name: "Kylo Ren",
+                image: "https://static.wikia.nocookie.net/starwars/images/9/9e/Kylo_TLJ.png",
+                description: "The master of the Knights of Ren and the enigmatic Supreme Leader of the First Order, he was a powerful Force-sensitive human male.",
+                birthYear: "5 ABY",
+                homeworld: "Chandrila",
+                species: "Human",
+                affiliation: ["First Order", "Knights of Ren"]
+            },
+            leia: {
+                name: "Leia Organa",
+                image: "https://static.wikia.nocookie.net/starwars/images/f/fc/Leia_Organa_TLJ.png",
+                description: "A human female politician and revolutionary who became a princess of Alderaan, a member of the Imperial Senate, a leader of the Rebel Alliance, and a founding member of the New Republic.",
+                birthYear: "19 BBY",
+                homeworld: "Alderaan",
+                species: "Human",
+                affiliation: ["Rebel Alliance", "New Republic", "Resistance"]
+            },
+            luke: {
+                name: "Luke Skywalker",
+                image: "https://static.wikia.nocookie.net/starwars/images/d/d9/Luke-rotjpromo.jpg",
+                description: "A legendary Jedi Master who was instrumental in the defeat of the Galactic Empire.",
+                birthYear: "19 BBY",
+                homeworld: "Tatooine",
+                species: "Human",
+                affiliation: ["Jedi Order", "Rebel Alliance", "New Republic"]
+            },
+            mace: {
+                name: "Mace Windu",
+                image: "https://static.wikia.nocookie.net/starwars/images/5/58/Mace_ROTS.png",
+                description: "A revered human male Jedi Master and member of the Jedi High Council during the last years of the Galactic Republic.",
+                birthYear: "72 BBY",
+                homeworld: "Haruun Kal",
+                species: "Human",
+                affiliation: ["Jedi Order", "Galactic Republic"]
+            },
+            obiwan: {
+                name: "Obi-Wan Kenobi",
+                image: "https://static.wikia.nocookie.net/starwars/images/4/4e/ObiWanHS-SWE.jpg",
+                description: "A legendary Jedi Master who served on the Jedi High Council during the final years of the Galactic Republic.",
+                birthYear: "57 BBY",
+                homeworld: "Stewjon",
+                species: "Human",
+                affiliation: ["Jedi Order", "Galactic Republic"]
+            },
+            padme: {
+                name: "Padmé Amidala",
+                image: "https://static.wikia.nocookie.net/starwars/images/b/b2/Padmegreenscrshot.jpg",
+                description: "A human female politician who served as the Queen and later Senator of Naboo, and was secretly the wife of Jedi Knight Anakin Skywalker.",
+                birthYear: "46 BBY",
+                homeworld: "Naboo",
+                species: "Human",
+                affiliation: ["Galactic Republic", "Royal House of Naboo"]
+            },
+            rey: {
+                name: "Rey",
+                image: "https://static.wikia.nocookie.net/starwars/images/f/f8/ReyTLJEntertainmentWeeklyNovember.png",
+                description: "A human female scavenger and Force prodigy who discovered her latent Force-sensitivity while on a journey to find the legendary Jedi Master Luke Skywalker.",
+                birthYear: "15 ABY",
+                homeworld: "Jakku",
+                species: "Human",
+                affiliation: ["Resistance", "Jedi Order"]
+            },
+            r2d2: {
+                name: "R2-D2",
+                image: "https://static.wikia.nocookie.net/starwars/images/e/eb/ArtooTFA2-Fathead.png",
+                description: "An astromech droid involved with critical moments in galactic history, helping to save the galaxy many times.",
+                creationYear: "32 BBY",
+                homeworld: "Naboo",
+                species: "Droid",
+                affiliation: ["Galactic Republic", "Rebel Alliance", "Resistance"]
+            },
+            yoda: {
+                name: "Yoda",
+                image: "https://static.wikia.nocookie.net/starwars/images/d/d6/Yoda_SWSB.png",
+                description: "A legendary Jedi Master who served as Grand Master of the Jedi Order in the waning days of the Galactic Republic.",
+                birthYear: "896 BBY",
+                homeworld: "Unknown",
+                species: "Unknown",
+                affiliation: ["Jedi Order"]
+            }
+        };
+        
+        // Planet data
+        const planets = {
+            ahchto: {
+                name: "Ahch-To",
+                image: "https://static.wikia.nocookie.net/starwars/images/9/9c/Ahch-To_TLJ.png",
+                description: "An oceanic planet that was the location of the first Jedi Temple and home to a sentient species called the Lanai.",
+                climate: "Temperate",
+                terrain: "Islands, oceans",
+                population: "Unknown",
+                notableResidents: ["Luke Skywalker", "Lanai"]
+            },
+            coruscant: {
+                name: "Coruscant",
+                image: "https://static.wikia.nocookie.net/starwars/images/8/84/Coruscant_TOTJ.png",
+                description: "A planet-covering city and the capital of the galaxy during the Republic and Empire eras.",
+                climate: "Temperate (climate-controlled)",
+                terrain: "Urban",
+                population: "1 trillion",
+                notableResidents: ["Sheev Palpatine", "Jedi Order"]
+            },
+            dagobah: {
+                name: "Dagobah",
+                image: "https://static.wikia.nocookie.net/starwars/images/4/44/Dagobah_ep3.jpg",
+                description: "A remote, swampy planet strong with the Force, where Jedi Master Yoda lived in exile.",
+                climate: "Humid",
+                terrain: "Swamps, bogs",
+                population: "None (uninhabited)",
+                notableResidents: ["Yoda"]
+            },
+            endor: {
+                name: "Endor",
+                image: "https://static.wikia.nocookie.net/starwars/images/1/1d/Endor_FFGRebellion.png",
+                description: "A forested moon that was home to the Ewoks and site of the Battle of Endor.",
+                climate: "Temperate",
+                terrain: "Forests, mountains",
+                population: "30,000 Ewoks",
+                notableResidents: ["Ewoks"]
+            },
+            hoth: {
+                name: "Hoth",
+                image: "https://static.wikia.nocookie.net/starwars/images/1/1d/Hoth_SWCT.png",
+                description: "The sixth planet of the remote Hoth system. It was the location of the Rebel Alliance's Echo Base.",
+                climate: "Frozen",
+                terrain: "Ice caves, glaciers",
+                population: "None (uninhabited)",
+                notableResidents: "Wampas"
+            },
+            tatooine: {
+                name: "Tatooine",
+                image: "https://static.wikia.nocookie.net/starwars/images/b/b0/Tatooine_TPM.png",
+                description: "A desert planet located in the Outer Rim Territories. It was the homeworld of Anakin and Luke Skywalker.",
+                climate: "Arid",
+                terrain: "Desert",
+                population: "200,000",
+                notableResidents: ["Anakin Skywalker", "Luke Skywalker", "Jabba the Hutt"]
+            },
+            naboo: {
+                name: "Naboo",
+                image: "https://static.wikia.nocookie.net/starwars/images/3/32/Naboo_planet.png",
+                description: "A bountiful planet in the Mid Rim, home to both the human Naboo and the amphibious Gungans.",
+                climate: "Temperate",
+                terrain: "Grassy plains, swamps",
+                population: "4.5 billion",
+                notableResidents: ["Padmé Amidala", "Jar Jar Binks", "Sheev Palpatine"]
+            },
+            kashyyyk: {
+                name: "Kashyyyk",
+                image: "https://static.wikia.nocookie.net/starwars/images/7/73/Kashyyyk_FFGRebellion.png",
+                description: "The lush, wroshyr tree-covered homeworld of the Wookiees.",
+                climate: "Tropical",
+                terrain: "Forests, beaches",
+                population: "45 million Wookiees",
+                notableResidents: ["Chewbacca", "Tarfful"]
+            },
+            mustafar: {
+                name: "Mustafar",
+                image: "https://static.wikia.nocookie.net/starwars/images/5/58/Mustafar_DB.png",
+                description: "A small planet in the Outer Rim, site of the duel between Obi-Wan Kenobi and Anakin Skywalker.",
+                climate: "Hot",
+                terrain: "Volcanoes, lava rivers",
+                population: "20,000",
+                notableResidents: ["Darth Vader"]
+            }
+        };
+        
+        // Display character or planet information
+        function displayInfo(item, type) {
+            const displayArea = document.getElementById('display-area');
+            
+            if (type === 'character') {
+                displayArea.innerHTML = `
+                    <div class="character-info">
+                        <div class="character-header">
+                            <img src="${item.image}" alt="${item.name}" class="character-image">
+                            <h2 class="character-name">${item.name}</h2>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Description:</span>
+                            <span class="info-value">${item.description}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Born:</span>
+                            <span class="info-value">${item.birthYear || item.creationYear}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Homeworld:</span>
+                            <span class="info-value">${item.homeworld}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Species:</span>
+                            <span class="info-value">${item.species}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Affiliation:</span>
+                            <span class="info-value">${item.affiliation.join(', ')}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                displayArea.innerHTML = `
+                    <div class="character-info">
+                        <div class="character-header">
+                            <img src="${item.image}" alt="${item.name}" class="character-image">
+                            <h2 class="character-name">${item.name}</h2>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Description:</span>
+                            <span class="info-value">${item.description}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Climate:</span>
+                            <span class="info-value">${item.climate}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Terrain:</span>
+                            <span class="info-value">${item.terrain}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Population:</span>
+                            <span class="info-value">${item.population}</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Notable Residents:</span>
+                            <span class="info-value">${Array.isArray(item.notableResidents) ? item.notableResidents.join(', ') : item.notableResidents}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Event listeners for character buttons
+        document.querySelectorAll('[data-character]').forEach(button => {
+            button.addEventListener('click', function() {
+                const characterId = this.getAttribute('data-character');
+                const character = characters[characterId];
+                if (character) displayInfo(character, 'character');
+            });
+        });
+        
+        // Event listeners for planet buttons
+        document.querySelectorAll('[data-planet]').forEach(button => {
+            button.addEventListener('click', function() {
+                const planetId = this.getAttribute('data-planet');
+                const planet = planets[planetId];
+                if (planet) displayInfo(planet, 'planet');
+            });
+        });
+        
+        // Search functionality
+        document.getElementById('search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            // Search character buttons
+            document.querySelectorAll('[data-character]').forEach(button => {
+                const characterName = button.textContent.toLowerCase();
+                button.style.display = characterName.includes(searchTerm) ? 'flex' : 'none';
+            });
+            
+            // Search planet buttons
+            document.querySelectorAll('[data-planet]').forEach(button => {
+                const planetName = button.textContent.toLowerCase();
+                button.style.display = planetName.includes(searchTerm) ? 'flex' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
